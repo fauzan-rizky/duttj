@@ -54,17 +54,25 @@
             min-width: 1.2ch;
         }
 
+        #months {
+            min-width: 2ch;
+        }
+
         #days {
+            min-width: 2ch;
+        }
+
+        #centiseconds {
             min-width: 2ch;
         }
 
         @media (max-width: 480px) {
             .countdown {
-                font-size: clamp(1.8rem, 8vw, 2.8rem);
+                font-size: clamp(1.3rem, 5.5vw, 2.2rem);
             }
 
             .colon {
-                margin: 0 0.12em;
+                margin: 0 0.1em;
             }
         }
     </style>
@@ -73,48 +81,71 @@
 <body>
 
     <div class="countdown">
-        <span class="unit" id="days">0</span>
+        <span class="unit" id="months">00</span>
+        <span class="colon">:</span>
+        <span class="unit" id="days">00</span>
         <span class="colon">:</span>
         <span class="unit" id="hours">00</span>
         <span class="colon">:</span>
         <span class="unit" id="minutes">00</span>
         <span class="colon">:</span>
         <span class="unit" id="seconds">00</span>
+        <span class="colon">:</span>
+        <span class="unit" id="centiseconds">00</span>
     </div>
 
     <script>
-        const targetDate = new Date('2030-06-01T00:00:00').getTime();
+        const targetDateObj = new Date('2030-06-01T00:00:00');
+        const targetDate = targetDateObj.getTime();
 
+        const monthsEl = document.getElementById('months');
         const daysEl = document.getElementById('days');
         const hoursEl = document.getElementById('hours');
         const minutesEl = document.getElementById('minutes');
         const secondsEl = document.getElementById('seconds');
+        const centisecondsEl = document.getElementById('centiseconds');
 
         function updateCountdown() {
-            const now = new Date().getTime();
-            const difference = targetDate - now;
+            const now = new Date();
+            const difference = targetDate - now.getTime();
 
             if (difference <= 0) {
-                daysEl.textContent = '0';
+                monthsEl.textContent = '00';
+                daysEl.textContent = '00';
                 hoursEl.textContent = '00';
                 minutesEl.textContent = '00';
                 secondsEl.textContent = '00';
+                centisecondsEl.textContent = '00';
                 return;
             }
 
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            let months = (targetDateObj.getFullYear() - now.getFullYear()) * 12 + (targetDateObj.getMonth() - now.getMonth());
+            let anchor = new Date(now);
+            anchor.setMonth(anchor.getMonth() + months);
+            if (anchor.getTime() > targetDate) {
+                months--;
+                anchor = new Date(now);
+                anchor.setMonth(anchor.getMonth() + months);
+            }
 
-            daysEl.textContent = days;
+            const remainingMs = targetDate - anchor.getTime();
+            const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+            const centiseconds = Math.floor((remainingMs % 1000) / 10);
+
+            monthsEl.textContent = String(months).padStart(2, '0');
+            daysEl.textContent = String(days).padStart(2, '0');
             hoursEl.textContent = String(hours).padStart(2, '0');
             minutesEl.textContent = String(minutes).padStart(2, '0');
             secondsEl.textContent = String(seconds).padStart(2, '0');
+            centisecondsEl.textContent = String(centiseconds).padStart(2, '0');
+
+            requestAnimationFrame(updateCountdown);
         }
 
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
+        requestAnimationFrame(updateCountdown);
     </script>
 </body>
 
