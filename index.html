@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <title>1 Juni 2030</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: "Rajdhani", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .countdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2rem, 7.5vw, 6.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            font-variant-numeric: tabular-nums;
+            text-align: center;
+            padding: 1rem;
+            white-space: nowrap;
+        }
+
+        .colon {
+            margin: 0 0.2em;
+            color: #555555;
+            font-weight: 400;
+            position: relative;
+            top: -0.05em;
+        }
+
+        .unit {
+            display: inline-block;
+            min-width: 1.2ch;
+        }
+
+        #days {
+            min-width: 2ch;
+        }
+
+        @media (max-width: 480px) {
+            .countdown {
+                font-size: clamp(1.8rem, 8vw, 2.8rem);
+            }
+
+            .colon {
+                margin: 0 0.12em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="countdown" title="Hari : Jam : Menit : Detik">
+        <span class="unit" id="days">0</span>
+        <span class="colon">:</span>
+        <span class="unit" id="hours">00</span>
+        <span class="colon">:</span>
+        <span class="unit" id="minutes">00</span>
+        <span class="colon">:</span>
+        <span class="unit" id="seconds">00</span>
+    </div>
+
+    <script>
+        const targetDate = new Date('2030-06-01T00:00:00').getTime();
+
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference <= 0) {
+                daysEl.textContent = '0';
+                hoursEl.textContent = '00';
+                minutesEl.textContent = '00';
+                secondsEl.textContent = '00';
+                return;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            daysEl.textContent = days;
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minutesEl.textContent = String(minutes).padStart(2, '0');
+            secondsEl.textContent = String(seconds).padStart(2, '0');
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+
+</html>
